@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using EEA.Pathfinding;
 
 namespace EEA.Managers
 {
@@ -11,6 +12,7 @@ namespace EEA.Managers
         [SerializeField] private Obstacle[] obstacles;
         [SerializeField] private Collider seaCollider;
         [SerializeField] private float safeRadius;
+        
         private static Sea instance;
 
         public struct SeaPos
@@ -45,7 +47,7 @@ namespace EEA.Managers
                 tryCount++;
                 Vector3 possiblePos = new Vector3(unitSphere.x, 0, unitSphere.y) * safeRadius;
 
-                if(!obstacles.Any(obs => obs.Collider.bounds.Contains(possiblePos)))
+                if(!IsPositionInObstacle(possiblePos))
                 {
                     Debug.Log("Sea pos found at " + tryCount + " try");
                     return new SeaPos(possiblePos, true);
@@ -54,6 +56,11 @@ namespace EEA.Managers
 
             Debug.Log("Couldn't found sea pos");
             return new SeaPos(Vector3.zero, false);
+        }
+
+        public bool IsPositionInObstacle(Vector3 pos)
+        {
+            return obstacles.Any(obs => obs.Collider.bounds.Contains(pos));
         }
 
         private void OnDrawGizmos()

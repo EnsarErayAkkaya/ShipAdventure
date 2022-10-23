@@ -4,12 +4,7 @@ namespace EEA.General
 {
     public class Obstacle : MonoBehaviour
     {
-        private Collider collider;
-
-        private void Start()
-        {
-            collider = GetComponent<Collider>();
-        }
+        [SerializeField] private Collider collider;
 
         public Collider Collider => collider;
     }
