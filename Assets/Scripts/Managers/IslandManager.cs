@@ -8,7 +8,7 @@ namespace EEA.Managers
 {
     public class IslandManager : MonoBehaviour
     {
-        [SerializeField] private Vector2Int noiseSize;
+       /* [SerializeField] private Vector2Int noiseSize;
         [SerializeField] private int interval = 1;
         [SerializeField] private Island.Island island;
 
@@ -195,6 +195,6 @@ namespace EEA.Managers
                     Gizmos.DrawWireCube(new Vector3(origin.x + i, 0, origin.y + j), Vector3.one * .95f);
                 }
             }
-        }
+        }*/
     }
 }

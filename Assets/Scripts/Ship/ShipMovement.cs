@@ -32,22 +32,26 @@ namespace EEA.Ship
         [SerializeField] private float dragFriction = .9f;
         [SerializeField] private float dragMultiplier = 5;
         [SerializeField] private float collisionCloseAngle = 45;
+        [SerializeField] private Collider _collider;
         
+        [Header("Referances")]
+        [SerializeField] private ShipStats shipStats;
             
-        private Vector3 halfBoundingBox;
+        //private Vector3 halfBoundingBox;
 
-
-        private WindManager WindManager;
-        private float angle;
+        private float windAngle;
         private float speed;
         private Vector3 drag;
         
         private float anchor = 0; // 0 anchore on ground, 1 anchor collected
         private bool anchorFree = true;  // true anchor falling, false anchor collecting or collected
 
-        public Vector3 HalfBoundingBox => halfBoundingBox;
+        public ShipStats ShipStats => shipStats;
+        public Collider Collider => _collider;
+        //public Vector3 HalfBoundingBox => halfBoundingBox;
         public float Sail => sail;
         public float WheelAngle => wheelAngle;
+        public float Angle => transform.rotation.eulerAngles.y;
         /// <summary>
         /// If true means iron released and ship stop else iron collected and ship free
         /// </summary>
@@ -55,7 +59,7 @@ namespace EEA.Ship
 
         private void Start()
         {
-            WindManager = WindManager.instance;
+            shipStats.onDeath += OnDeath;
         }
 
         private void OnTriggerEnter(Collider other)
@@ -63,9 +67,9 @@ namespace EEA.Ship
             if (other.transform.TryGetComponent<ShipMovement>(out var otherShip))
             {
                 Vector3 dir = (otherShip.transform.position - transform.position).normalized;
-                float angle = Mathf.Abs(Vector3.SignedAngle(transform.forward, dir, Vector3.up));
+                float collisionAngle = Mathf.Abs(Vector3.SignedAngle(transform.forward, dir, Vector3.up));
 
-                if (angle < collisionCloseAngle)
+                if (collisionAngle < collisionCloseAngle)
                 {
                     speed *= .5f;
                     otherShip.drag = speed * transform.forward * dragMultiplier;
@@ -74,12 +78,45 @@ namespace EEA.Ship
             else if (other.transform.TryGetComponent<Obstacle>(out var obstacle))
             {
                 Vector3 dir = (obstacle.transform.position - transform.position).normalized;
-                float angle = Mathf.Abs(Vector3.SignedAngle(transform.forward, dir, Vector3.up));
-                angle = Math.Max(angle, 90) / 90.0f; 
+                float collisionAngle = Mathf.Abs(Vector3.SignedAngle(transform.forward, dir, Vector3.up));
+                collisionAngle = Math.Max(collisionAngle, 90) / 90.0f; 
 
-                speed *= Mathf.Lerp(1,0, angle);
+                speed *= Mathf.Lerp(1,0, collisionAngle);
                 
             }
+        }
+
+        private void OnTriggerStay(Collider other)
+        {
+            if (other.transform.TryGetComponent<ShipMovement>(out var otherShip))
+            {
+                Vector3 dir = (otherShip.transform.position - transform.position).normalized;
+                float collisionAngle = Mathf.Abs(Vector3.SignedAngle(transform.forward, dir, Vector3.up));
+
+                if (collisionAngle < collisionCloseAngle)
+                {
+                    speed *= .5f;
+                    otherShip.drag = speed * transform.forward * dragMultiplier;
+                }
+            }
+            else if (other.transform.TryGetComponent<Obstacle>(out var obstacle))
+            {
+                Vector3 dir = (obstacle.transform.position - transform.position).normalized;
+                float collisionAngle = Mathf.Abs(Vector3.SignedAngle(transform.forward, dir, Vector3.up));
+                collisionAngle = Math.Max(collisionAngle, 90) / 90.0f;
+
+                speed *= Mathf.Lerp(1, 0, collisionAngle);
+
+            }
+        }
+
+        private void OnDeath(string id)
+        {
+            Collider.enabled = false;
+            if (!Anchor)
+            {
+                ToggleAnchor();
+            }        
         }
 
         private void FixedUpdate()
@@ -111,13 +148,13 @@ namespace EEA.Ship
             Vector2 forward = new Vector2(transform.forward.x, transform.forward.z);  
             Vector2 wind = WindManager.instance.wind;
 
-            angle = Vector2.Angle(forward, wind);
+            windAngle = Vector2.Angle(forward, wind);
 
             float target_speed = minSpeed;
 
-            if (angle < 90) // if wind effects
+            if (windAngle < 90) // if wind effects
             {
-                target_speed = ((90 - angle) / 90) * windSpeedEffect * sail;
+                target_speed = ((90 - windAngle) / 90) * windSpeedEffect * sail;
             }
 
             if (sail > 0) // opening sail even against wind increase speed a little

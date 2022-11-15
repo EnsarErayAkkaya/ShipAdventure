@@ -33,6 +33,11 @@ namespace EEA.UI
             filler.fillAmount = 0;
         }
 
+        public void SetColor(Color c)
+        {
+            filler.color = c;
+        }
+
         public void UpdateProgress(float percentage, float begin, float end)
         {
             _currentFillAmount = Mathf.Lerp(begin, end, percentage);

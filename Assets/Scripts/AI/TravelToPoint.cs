@@ -9,7 +9,6 @@ namespace EEA.Enemy
     {
         [SerializeField] private float reachedTarget;
         [SerializeField] private float minAngleForMaxTurnSpeed = 30;
-        [SerializeField] private float smoothSpeed;
 
         public bool Travel(ShipMovement shipMovement, Vector3 point)
         {

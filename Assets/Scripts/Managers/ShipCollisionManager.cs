@@ -64,6 +64,7 @@ namespace EEA.Managers
     }
     public class ShipCollisionManager : MonoBehaviour
     {
+        /*
         private List<ShipMovement> shipMovements;
         private List<Box> boxes;
 
@@ -113,5 +114,6 @@ namespace EEA.Managers
                 }
             }
         }
+        */
     }
 }

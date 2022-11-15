@@ -29,10 +29,6 @@ namespace EEA.Enemy
             if(healthPercent <= 0)
             {
                 StopMachine();
-                if(!shipMovement.Anchor)
-                {
-                    shipMovement.ToggleAnchor();
-                }
             }
         }
     }

@@ -15,6 +15,7 @@ namespace EEA.Ship
         [SerializeField] private float gravity;
         [SerializeField] private float gravityEffectAfter;
         [SerializeField] private int damage;
+        [SerializeField] private LayerMask layerMask;
         [SerializeField] private ParticleSystem explosionParticle;
 
         private float t = 0;

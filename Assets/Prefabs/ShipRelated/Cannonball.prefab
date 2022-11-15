@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1744447185006464293}
   - component: {fileID: 1744447185006464294}
   - component: {fileID: 1744447185006464295}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cannonball
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -91,7 +91,7 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1744447185006464280}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
@@ -112,4 +112,7 @@ MonoBehaviour:
   gravity: 1
   gravityEffectAfter: 1.25
   damage: 15
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
   explosionParticle: {fileID: 198000012777718758, guid: acf39d9f4addf294d93fa56fa373961b, type: 3}

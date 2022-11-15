@@ -71,7 +71,19 @@ namespace EEA.Enemy
 
         private void CalculateAttackAngle()
         {
-            attackDir = Quaternion.AngleAxis(90, Vector3.up) * dir;
+            // calculate both angles
+            Vector3 leftAttackDir = Quaternion.AngleAxis(90, Vector3.up) * dir;
+            Vector3 rightAttackDir = Quaternion.AngleAxis(-90, Vector3.up) * dir;
+            
+            // set aattack angle to closer one
+            if(Vector3.SignedAngle(leftAttackDir, transform.forward, Vector3.up) < Vector3.SignedAngle(rightAttackDir, transform.forward, Vector3.up))
+            {
+                attackDir = leftAttackDir;
+            }
+            else
+            {
+                attackDir = rightAttackDir;
+            }
 
             travelToPoint.SetAngle(ship, attackDir);
 

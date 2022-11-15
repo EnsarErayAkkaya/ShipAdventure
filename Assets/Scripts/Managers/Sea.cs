@@ -9,6 +9,7 @@ namespace EEA.Managers
 {
     public class Sea : MonoBehaviour
     {
+        [SerializeField] private Pathfinding.Grid grid;
         [SerializeField] private Obstacle[] obstacles;
         [SerializeField] private Collider seaCollider;
         [SerializeField] private float safeRadius;
@@ -47,7 +48,7 @@ namespace EEA.Managers
                 tryCount++;
                 Vector3 possiblePos = new Vector3(unitSphere.x, 0, unitSphere.y) * safeRadius;
 
-                if(!IsPositionInObstacle(possiblePos))
+                if(!IsPositionInObstacle(possiblePos) && grid.NodeFromWorldPoint(possiblePos).walkable)
                 {
                     Debug.Log("Sea pos found at " + tryCount + " try");
                     return new SeaPos(possiblePos, true);

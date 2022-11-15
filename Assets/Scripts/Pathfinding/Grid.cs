@@ -14,13 +14,14 @@ namespace EEA.Pathfinding
         [SerializeField] private LayerMask obstacleMask;
         [SerializeField] private Vector2 gridWorldSize;
         [SerializeField] private float nodeRadius;
+        [SerializeField] private bool displayGridGizmos;
         Node[,] grid;
 
         private float nodeDiameter;
 
         private int gridSizeX, gridSizeY;
 
-        internal List<Node> path;
+        public int MaxSize => gridSizeX * gridSizeY;
 
         private void Awake()
         {
@@ -96,21 +97,15 @@ namespace EEA.Pathfinding
         {
             Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
 
-            if(grid != null)
+            if(grid != null && displayGridGizmos)
             {
                 foreach (Node n in grid)
                 {
                     Gizmos.color = (n.walkable) ? Color.white : Color.red;
-                    if(path != null)
-                    {
-                        if(path.Contains(n))
-                        {
-                            Gizmos.color = Color.black;
-                        }
-                    }
+
                     Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
                 }
-            }  
+            }          
         }
     }
 }

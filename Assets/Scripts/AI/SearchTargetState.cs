@@ -7,6 +7,8 @@ using System.Threading;
 using EEA.General;
 using EEA.Ship;
 using EEA.Managers;
+using EEA.Pathfinding;
+using System.Linq;
 
 namespace EEA.Enemy
 {
@@ -14,7 +16,6 @@ namespace EEA.Enemy
     {
         [SerializeField] private AttackState attackState;
 
-        [SerializeField] private Collider shipCollider;
         [SerializeField] private ShipMovement ship;
 
         [Header("Search Settings")]
@@ -25,13 +26,13 @@ namespace EEA.Enemy
         [SerializeField] private TravelToPoint travel;
 
         private Sea.SeaPos target;
+        private Vector3[] path;
+        private int pathIndex = 0;
         private Sea sea;
-        private bool reachedTarget;
-        private int searchFrameCounter = 0;
+        private bool reachedTarget = true;
         private void Start()
         {
             sea = FindObjectOfType<Sea>();
-            Sea.SeaPos seaPos = sea.GetRandomAreaOnSea();
         }
 
         public override void EnterState(BaseStateMachine stateMachine)
@@ -51,14 +52,24 @@ namespace EEA.Enemy
                 return searchPerimeterResult;
             }
 
-            if(target.success)
+            if (path != null && pathIndex < path.Length)
             {
-                reachedTarget = travel.Travel(ship, target.pos);
+                reachedTarget = travel.Travel(ship, path[pathIndex]);
             }
 
             if (reachedTarget)
             {
-                target = sea.GetRandomAreaOnSea();
+                pathIndex++;
+                if(path == null || pathIndex >= path.Length)
+                {
+                    target = sea.GetRandomAreaOnSea();
+                    if(target.success)
+                    {
+                        pathIndex = 0;
+                        PathRequestManager.RequestPath(ship.transform.position, target.pos, OnPathFound);
+                        reachedTarget = false;
+                    }
+                }
             }
 
             await UniTask.Yield();
@@ -66,11 +77,19 @@ namespace EEA.Enemy
             return this;
         }
 
+        private void OnPathFound(Vector3[] path, bool success)
+        {
+            if(success)
+            {
+                this.path = path;
+            }
+        }
+
         private BaseState SearchPerimeter()
         {
-            if (searchFrameCounter == searchFrameInterval)
+            if (Time.frameCount % searchFrameInterval == 0)
             {
-                var colliders = CheckPerimeter.Check(shipCollider, ship.transform, checkRadius, checkLayer);
+                var colliders = CheckPerimeter.Check(ship.Collider, ship.transform, checkRadius, checkLayer);
 
                 if (colliders.Count > 0)
                 {
@@ -103,6 +122,14 @@ namespace EEA.Enemy
             {
                 Gizmos.color = Color.blue;
                 Gizmos.DrawCube(target.pos, Vector3.one);
+                if (path != null)
+                {
+                    for (int i = pathIndex; i < path.Length; i++)
+                    {
+                        Gizmos.color = Color.black;
+                        Gizmos.DrawCube(path[i], Vector3.one);
+                    }
+                }
             }
         }
     }

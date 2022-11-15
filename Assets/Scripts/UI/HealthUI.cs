@@ -13,6 +13,8 @@ namespace EEA.UI
 
         [SerializeField] private BaseStat baseStat;
 
+        public ProgressBarBase ProgressBar => progressBarBase;
+
         private void OnEnable()
         {
             baseStat.onHealthChange += OnHealthChange;
@@ -24,6 +26,11 @@ namespace EEA.UI
 
         private void OnHealthChange(float value)
         {
+            if(value <= 0)
+            {
+                progressBarBase.gameObject.SetActive(false);
+                return;
+            }
             progressBarBase.UpdateProgress(value, 0, 1);
         }
     }

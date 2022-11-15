@@ -65,6 +65,7 @@ MonoBehaviour:
   attackState: {fileID: 839281599268415347}
   shipCollider: {fileID: 7111588942169775260}
   ship: {fileID: 839281597730933529}
+  searchFrameInterval: 7
   checkRadius: 5
   checkLayer:
     serializedVersion: 2
@@ -99,7 +100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55c5ba71ddc234e4486e1a25035341ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  reachedTarget: 0.5
+  reachedTarget: 0.75
   minAngleForMaxTurnSpeed: 30
   smoothSpeed: 0
 --- !u!1001 &7080931517849841475

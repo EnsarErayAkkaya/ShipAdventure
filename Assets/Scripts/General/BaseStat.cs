@@ -14,17 +14,26 @@ namespace EEA.General
         public string ID => id;
 
         public Action<float> onHealthChange;
+
         private void Start()
         {
-            id = Guid.NewGuid().ToString();
+            Init();
+        }
+        protected virtual void Init()
+        {
             ModifyHealth(0);
         }
 
-        public bool ModifyHealth(int value)
+        public void SetID(string id)
+        {
+            this.id = id;
+        }
+
+        private bool ModifyHealth(int value)
         {
             health += value;
 
-            if (health < 0)
+            if (health <= 0)
             {
                 health = 0;
                 Debug.Log("Dead");
@@ -43,7 +52,20 @@ namespace EEA.General
 
         public bool TakeDamage(int value)
         {
-            return ModifyHealth(value);
+            if(health > 0)
+            {
+                return ModifyHealth(value);
+            }
+            return false;
+        }
+
+        public bool GainHealth(int value)
+        {
+            if (health > 0)
+            {
+                return ModifyHealth(value);
+            }
+            return false;
         }
     }
 }

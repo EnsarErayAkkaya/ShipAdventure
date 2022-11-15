@@ -52,6 +52,7 @@ namespace EEA.FSM
         /// </summary>
         private async void RunStateMachine()
         {
+            await UniTask.Yield(cancellationTokenSource.Token);
             try
             {
                 while (working)
