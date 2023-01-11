@@ -6,6 +6,7 @@ using UnityEngine;
 using EEA.Loot;
 using DG.Tweening;
 using EEA.UI;
+using EEA.Attributes;
 
 namespace EEA.Ship
 {
@@ -16,10 +17,13 @@ namespace EEA.Ship
         
         private Color color = Color.black;
         private bool isPlayer = false;
+        private Dictionary<AttributeType, float> attributes = new Dictionary<AttributeType, float>();
+
+        public Action<string> onDeath;
+        public Action<Dictionary<AttributeType, float>> onAttributesChange;
 
         public bool IsPlayer => isPlayer;
         public Color Color => color;
-        public Action<string> onDeath;
         protected override void Init()
         {
             base.Init();
@@ -37,6 +41,26 @@ namespace EEA.Ship
             this.isPlayer = isPlayer;
         }
 
+        public void AddAttribute(AttributeType type, float value)
+        {
+            if (!attributes.ContainsKey(type))
+            {
+                attributes[type] = 0;
+            }
+            attributes[type] += value;
+
+            onAttributesChange(attributes);
+        }
+
+        public void RemoveAttribute(AttributeType type, float value)
+        {
+            if (attributes.ContainsKey(type))
+            {
+                attributes[type] -= value;
+            }
+            onAttributesChange(attributes);
+        }
+
         private void OnDeath(float percent)
         {
             if(percent == 0)
@@ -44,7 +68,7 @@ namespace EEA.Ship
                 DOVirtual.DelayedCall(4, () =>
                 {
                     Instantiate(loot, transform.position, Quaternion.identity).Set(ID);
-                    Destroy(gameObject);
+                    Destroy(gameObject, 3);
                 });
                 onDeath(ID);
             }

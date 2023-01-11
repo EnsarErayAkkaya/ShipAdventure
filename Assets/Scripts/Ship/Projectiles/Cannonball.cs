@@ -15,14 +15,15 @@ namespace EEA.Ship
         [SerializeField] private float gravity;
         [SerializeField] private float gravityEffectAfter;
         [SerializeField] private int damage;
-        [SerializeField] private LayerMask layerMask;
         [SerializeField] private ParticleSystem explosionParticle;
 
+        private float attackPowerIncreatePercent;
         private float t = 0;
-        public void Set(string owner, Vector3 direction)
+        public void Set(string owner, Vector3 direction, float attackPowerIncreatePercent)
         {
             this.owner = owner;
             this.direction = direction;
+            this.attackPowerIncreatePercent = attackPowerIncreatePercent;
         }
 
         private void FixedUpdate()
@@ -48,7 +49,7 @@ namespace EEA.Ship
             {
                 if(_stats.ID != owner)
                 {
-                    _stats.TakeDamage(-damage);
+                    _stats.TakeDamage(-(damage + (int)(damage * attackPowerIncreatePercent)));
 
                     LeanPool.Despawn(gameObject);
 

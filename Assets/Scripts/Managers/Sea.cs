@@ -16,6 +16,8 @@ namespace EEA.Managers
         
         private static Sea instance;
 
+        public float SafeRadius => safeRadius;
+
         public struct SeaPos
         {
             public Vector3 pos;
@@ -57,6 +59,11 @@ namespace EEA.Managers
 
             Debug.Log("Couldn't found sea pos");
             return new SeaPos(Vector3.zero, false);
+        }
+
+        public Vector3 GetBounds()
+        {
+            return new Vector3(seaCollider.bounds.max.x - seaCollider.bounds.min.x, 0, seaCollider.bounds.max.z - seaCollider.bounds.min.z);
         }
 
         public bool IsPositionInObstacle(Vector3 pos)

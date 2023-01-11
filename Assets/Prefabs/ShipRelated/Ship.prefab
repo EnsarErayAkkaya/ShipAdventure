@@ -565,7 +565,6 @@ MonoBehaviour:
   health: 100
   maxHealth: 100
   loot: {fileID: 4719153416756732418, guid: 7d7934cf45b15974a8934096717aefe9, type: 3}
-  color: {r: 0, g: 0, b: 0, a: 1}
   healthUI: {fileID: 5159209279455380520}
 --- !u!114 &4880179523396132006
 MonoBehaviour:
@@ -580,7 +579,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 6443133545718643929}
-  shipStats: {fileID: 0}
+  shipStats: {fileID: 1695315207697186903}
 --- !u!65 &69231592378119135
 BoxCollider:
   m_ObjectHideFlags: 0

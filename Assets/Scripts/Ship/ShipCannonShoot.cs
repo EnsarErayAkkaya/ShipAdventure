@@ -4,6 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using EEA.UI;
+using EEA.Attributes;
+using System;
+using System.Xml.Linq;
 
 namespace EEA.Ship
 {
@@ -23,8 +26,23 @@ namespace EEA.Ship
         private float leftLastShootTime;
         private float rightLastShootTime;
 
+        private float attackPowerIncreatePercent;
+
         [SerializeField] private LoadingSprite rightLoadingSprite;
         [SerializeField] private LoadingSprite leftLoadingSprite;
+
+        private void Start()
+        {
+            shipStats.onAttributesChange += OnAttributesChange;
+        }
+
+        private void OnAttributesChange(Dictionary<AttributeType, float> attributes)
+        {
+            if (attributes.ContainsKey(AttributeType.ATTACK_POWER_INCREASE_PERCENT))
+            {
+                attackPowerIncreatePercent = attributes[AttributeType.ATTACK_POWER_INCREASE_PERCENT];
+            }
+        }
 
         public void ShootLeftCannons()
         {
@@ -66,7 +84,7 @@ namespace EEA.Ship
 
             for (int i = 0; i < shootTransforms.Length; i++)
             {
-                LeanPool.Spawn(cannonball, shootTransforms[i].position, Quaternion.identity).Set(shipStats.ID, dir);
+                LeanPool.Spawn(cannonball, shootTransforms[i].position, Quaternion.identity).Set(shipStats.ID, dir, attackPowerIncreatePercent);
             }
         }
 

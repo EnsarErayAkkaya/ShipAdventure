@@ -33,7 +33,6 @@ namespace EEA.Pathfinding
 
             if (startNode.walkable && targetNode.walkable)
             {
-
                 Heap<Node> openSet = new Heap<Node>(grid.MaxSize);
                 HashSet<Node> closedSet = new HashSet<Node>();
                 openSet.Add(startNode);
@@ -77,12 +76,12 @@ namespace EEA.Pathfinding
             yield return null;
             if(pathSuccess)
             {
-                waypoints = RetracePath(startNode, targetNode);
+                waypoints = RetracePath(startNode, targetNode, targetPos);
             }
             pathRequestManager.FinishedProcessingPath(waypoints, pathSuccess);
         }
 
-        Vector3[] RetracePath(Node startNode, Node endNode)
+        Vector3[] RetracePath(Node startNode, Node endNode, Vector3 targetPos)
         {
             List<Node> path = new List<Node>();
 
@@ -93,14 +92,16 @@ namespace EEA.Pathfinding
                 path.Add(currentNode);
                 currentNode = currentNode.parent;
             }
-            Vector3[] waypoints = SimplifyPath(path);
+            Vector3[] waypoints = SimplifyPath(path, targetPos);
             Array.Reverse(waypoints);
             return waypoints;
         }
 
-        Vector3[] SimplifyPath(List<Node> path)
+        Vector3[] SimplifyPath(List<Node> path, Vector3 targetPos)
         {
-            List < Vector3 > waypoints = new List<Vector3>();
+            List<Vector3> waypoints = new List<Vector3>();
+
+            waypoints.Add(targetPos);
 
             Vector2 lastDir = Vector2.zero;
 

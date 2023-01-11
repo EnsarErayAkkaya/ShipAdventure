@@ -2,10 +2,12 @@ using UnityEngine;
 using EEA.Managers;
 using System;
 using EEA.General;
+using System.Collections.Generic;
+using EEA.Attributes;
 
 namespace EEA.Ship
 {
-    public class ShipMovement : MonoBehaviour
+    public class ShipMovement : MonoBehaviour, IAITarget
     {
         [Header("Player Update Modifiers")]
         [SerializeField] private float wheelModifyMultiplier;
@@ -42,9 +44,16 @@ namespace EEA.Ship
         private float windAngle;
         private float speed;
         private Vector3 drag;
+
+        private float speedIncreasePercent;
         
         private float anchor = 0; // 0 anchore on ground, 1 anchor collected
         private bool anchorFree = true;  // true anchor falling, false anchor collecting or collected
+
+        // AI Target Interface parameters
+        public Transform GetAITargetTranform => transform;
+        public AITargetType TargetType => AITargetType.Ship;
+        //
 
         public ShipStats ShipStats => shipStats;
         public Collider Collider => _collider;
@@ -60,6 +69,15 @@ namespace EEA.Ship
         private void Start()
         {
             shipStats.onDeath += OnDeath;
+            shipStats.onAttributesChange += OnAttributesChange;
+        }
+
+        private void OnAttributesChange(Dictionary<AttributeType, float> attributes)
+        {
+            if(attributes.ContainsKey(AttributeType.MOVE_SPEED_INCREASE_PERCENT))
+            {
+                speedIncreasePercent = attributes[AttributeType.MOVE_SPEED_INCREASE_PERCENT];
+            }
         }
 
         private void OnTriggerEnter(Collider other)
@@ -150,6 +168,7 @@ namespace EEA.Ship
 
             windAngle = Vector2.Angle(forward, wind);
 
+            // base speed
             float target_speed = minSpeed;
 
             if (windAngle < 90) // if wind effects
@@ -161,6 +180,8 @@ namespace EEA.Ship
             {
                 target_speed += sailSpeedEffect * sail;
             }
+
+            target_speed += target_speed * speedIncreasePercent;
 
             target_speed *= anchor; // if anchor on ground (0) speed is 0 if anchor collected speed is itself
 
@@ -240,6 +261,11 @@ namespace EEA.Ship
                 /*Gizmos.color = Color.green;
                 Gizmos.DrawWireCube(transform.position, halfBoundingBox * 2);*/
             }
+        }
+
+        public bool IsTargetValid(ShipMovement ship)
+        {
+            return !this.shipStats.isDead;
         }
     }
 }

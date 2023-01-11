@@ -11,9 +11,11 @@ namespace EEA.General
         [SerializeField] private int health = 100;
         [SerializeField] private int maxHealth = 100;
 
+        public Action<float> onHealthChange;
+
         public string ID => id;
 
-        public Action<float> onHealthChange;
+        public bool isDead => health <= 0;
 
         private void Start()
         {

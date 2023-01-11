@@ -15,6 +15,7 @@ namespace EEA.Enemy
     public class SearchTargetState : BaseState
     {
         [SerializeField] private AttackState attackState;
+        [SerializeField] private LootState lootState;
 
         [SerializeField] private ShipMovement ship;
 
@@ -32,11 +33,15 @@ namespace EEA.Enemy
         private bool reachedTarget = true;
         private void Start()
         {
-            sea = FindObjectOfType<Sea>();
+            sea = FindObjectOfType<Sea>(); 
         }
 
         public override void EnterState(BaseStateMachine stateMachine)
         {
+            path = new Vector3[0];
+            reachedTarget = true;
+            pathIndex = 0;
+
             base.EnterState(stateMachine);
             if(ship.Anchor)
             {
@@ -74,7 +79,7 @@ namespace EEA.Enemy
 
             await UniTask.Yield();
 
-            return this;
+            return null;
         }
 
         private void OnPathFound(Vector3[] path, bool success)
@@ -93,23 +98,40 @@ namespace EEA.Enemy
 
                 if (colliders.Count > 0)
                 {
-                    ShipMovement closest = null;
+                    IAITarget closest = null;
                     float closestDistance = float.MaxValue;
 
                     foreach (var collider in colliders)
                     {
                         float _dist = Vector3.Distance(collider.transform.position, ship.transform.position);
-                        if (collider.TryGetComponent<ShipMovement>(out ShipMovement _ship) && (_dist < closestDistance))
+                        if (collider.TryGetComponent<IAITarget>(out IAITarget _target) && (_dist < closestDistance))
                         {
                             closestDistance = _dist;
-                            closest = _ship;
+                            closest = _target;
                         }
                     }
-                    if (closest != null)
+
+                    if (closest != null && closest.GetAITargetTranform != null && closest.IsTargetValid(ship))
                     {
-                        Debug.Log("found target: " + closest.name);
-                        attackState.SetTarget(closest);
-                        return attackState;
+                        switch (closest.TargetType)
+                        {
+                            case AITargetType.Ship:
+                            {
+                                Debug.Log("found target: " + closest.GetAITargetTranform.name);
+                                attackState.SetTarget(closest);
+                                return attackState;
+                            }
+                            case AITargetType.Island:
+                            {
+                                Debug.Log("found target: " + closest.GetAITargetTranform.name);
+                                lootState.SetTarget(closest);
+                                return lootState;
+                            }
+                            case AITargetType.Loot:
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }

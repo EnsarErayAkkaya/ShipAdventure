@@ -12,3 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35c0294d5bdfd594cadd7f88230ac53a, type: 3}
   m_Name: AttributesData
   m_EditorClassIdentifier: 
+  data:
+  - AttributeType: 0
+    icon: {fileID: 21300000, guid: 09b448c9444375b45b22ab08b4170c9b, type: 3}
+    value: 0.15
+  - AttributeType: 1
+    icon: {fileID: 21300000, guid: 36c9a7aae62c9f54584d260a350439d7, type: 3}
+    value: 0.1
+  - AttributeType: 2
+    icon: {fileID: 21300000, guid: 328579ea5b3e6e240b8eabf025531384, type: 3}
+    value: 0.15

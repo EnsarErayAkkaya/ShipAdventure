@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using EEA.FSM;
+using EEA.General;
 using EEA.Ship;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,13 +10,14 @@ namespace EEA.Enemy
 {
     public class AttackState : BaseState
     {
+        [SerializeField] private SearchTargetState searchTarget;
         [SerializeField] private float maxAttackDistance;
         [SerializeField] private float minAttackAngle;
         [SerializeField] private ShipMovement ship;
         [SerializeField] private ShipCannonShoot shipCannonShoot;
         [SerializeField] private TravelToPoint travelToPoint;
 
-        private ShipMovement target;
+        private IAITarget target;
         private Vector3 diff;
         private Vector3 dir;
         private float dist;
@@ -24,14 +26,18 @@ namespace EEA.Enemy
         private Vector3 attackDir;
         public async override UniTask<BaseState> ExecuteState(BaseStateMachine stateMachine, CancellationToken token = default)
         {
+            if (target == null || !target.IsTargetValid(ship))
+            {
+                return searchTarget;
+            }
             CalculateAttackPos();
             await UniTask.Yield();
-            return this;
+            return null;
         }
 
         private void CalculateAttackPos()
         {
-            diff = target.transform.position - ship.transform.position;
+            diff = target.GetAITargetTranform.position - ship.transform.position;
             dir = diff.normalized;
             dist = diff.magnitude;
 
@@ -63,7 +69,7 @@ namespace EEA.Enemy
             else // outside range
             {
                 // get in range
-                attackPos = target.transform.position - (dir * maxAttackDistance);
+                attackPos = target.GetAITargetTranform.position - (dir * maxAttackDistance);
                 travelToPoint.Travel(ship, attackPos);
                 //Debug.Log("AttackState: Travel to point");
             }
@@ -90,7 +96,7 @@ namespace EEA.Enemy
             //Debug.Log("AttackState: Rotate to angle");
         }
 
-        public void SetTarget(ShipMovement ship)
+        public void SetTarget(IAITarget ship)
         {
             target = ship;
         }

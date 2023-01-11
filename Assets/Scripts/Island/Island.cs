@@ -1,43 +1,53 @@
 using EEA.Attributes;
+using EEA.General;
 using EEA.Managers;
 using EEA.Ship;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace EEA.Island
 {
-    public class Island : MonoBehaviour
+    public class Island : MonoBehaviour, IAITarget
     {
         [SerializeField] private IslandData islandData;
         [SerializeField] private MeshRenderer ringMeshRenderer;
-        [SerializeField] private AttributeType attributeType;
+        [SerializeField] private AttributeData attribute;
+        [SerializeField] private Image attributeIcon;
 
         private ShipMovement owner = null;
         private float spendTime;
 
-        private AttributeManager attributeManager;
-        private ShipManager shipManager;
+        private PlayerManager playerManager;
         private ShipMovement ship;
 
         private Material shaderRingMaterial;
 
+        public Transform GetAITargetTranform => transform;
+        public AITargetType TargetType => AITargetType.Island;
+
         private void Start()
         {
-            attributeManager = FindObjectOfType<AttributeManager>();
-            shipManager = FindObjectOfType<ShipManager>();
-            shaderRingMaterial = ringMeshRenderer.material;
+            playerManager = FindObjectOfType<PlayerManager>();
+            shaderRingMaterial = ringMeshRenderer.material;           
+        }
+
+        public void SetAttribute(AttributeData attribute)
+        {
+            this.attribute = attribute;
+            attributeIcon.sprite = attribute.icon;
         }
 
         private void FixedUpdate()
         {
             int closeShipCount = 0;
-            for (int i = 0; i < shipManager.Ships.Count; i++)
+            for (int i = 0; i < playerManager.Players.Count; i++)
             {
-                if(Vector3.Distance(shipManager.Ships[i].transform.position, transform.position) <= islandData.claimRadius)
+                if(Vector3.Distance(playerManager.Players[i].ShipMovement.transform.position, transform.position) <= islandData.claimRadius)
                 {
                     closeShipCount++;
-                    ship = shipManager.Ships[i];
+                    ship = playerManager.Players[i].ShipMovement;
                     if(closeShipCount > 1)
                     {
                         spendTime = 0;
@@ -72,7 +82,7 @@ namespace EEA.Island
                 if (spendTime >= islandData.claimDuration)
                 {
                     owner = ship;
-                    attributeManager.Add(owner.ShipStats.ID, attributeType);
+                    owner.ShipStats.AddAttribute(attribute.AttributeType, attribute.value);
                     shaderRingMaterial.SetColor("color_", owner.ShipStats.Color);
                     spendTime = 0;
                 }         
@@ -92,6 +102,11 @@ namespace EEA.Island
         {
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, islandData.claimRadius);
+        }
+
+        public bool IsTargetValid(ShipMovement ship)
+        {
+            return ship != this.owner;
         }
     }
 }

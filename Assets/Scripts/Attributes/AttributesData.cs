@@ -13,6 +13,7 @@ namespace EEA.Attributes
     public struct AttributeData
     {
         public AttributeType AttributeType;
+        public Sprite icon;
         public float value;
     }
 

@@ -17,7 +17,7 @@ namespace EEA.Managers
 
         private void Start()
         {
-            gameState = GameState.START;
+            gameState = GameState.GAME;
             gameUIManager = FindObjectOfType<GameUIManager>();
         }
 

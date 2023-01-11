@@ -7,16 +7,31 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace EEA.Enemy
 {
-    public class EnemyBot : BaseStateMachine
+    public enum ShipAIType
     {
+        Aggressive, Defansive, Tactical
+    }
+    public class EnemyBot : BaseStateMachine, IPlayer
+    {
+        [SerializeField] protected ShipAIType shipAIType; 
         [SerializeField] protected ShipMovement shipMovement;
-        [SerializeField] private BaseStat baseStat;
+        [SerializeField] protected ShipCannonShoot shipCannonShoot;
+        public GameObject GameObject => gameObject;
+
+        public ShipMovement ShipMovement => shipMovement;
+
+        public ShipCannonShoot ShipCannonShoot => shipCannonShoot;
 
         protected override void MachineOnEnable()
         {
             base.MachineOnEnable();
 
-            baseStat.onHealthChange += OnHealthChange;
+            shipMovement.ShipStats.onHealthChange += OnHealthChange;
+        }
+
+        public void SetAIType(ShipAIType type)
+        {
+            shipAIType = type;
         }
 
         protected override void MachineOnDisable()

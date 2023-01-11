@@ -1,3 +1,4 @@
+using EEA.General;
 using EEA.Managers;
 using EEA.Ship;
 using Lean.Touch;
@@ -7,7 +8,7 @@ using UnityEngine;
 
 namespace EEA.Player
 {
-    public class Player : MonoBehaviour
+    public class Player : MonoBehaviour, IPlayer
     {
         [SerializeField] private ShipMovement shipMovement;
         [SerializeField] private ShipCannonShoot shipCannonShoot;
@@ -19,6 +20,7 @@ namespace EEA.Player
 
         public ShipMovement ShipMovement => shipMovement;
         public ShipCannonShoot ShipCannonShoot => shipCannonShoot;
+        public GameObject GameObject => gameObject;
 
         private void Start()
         {
